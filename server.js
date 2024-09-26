@@ -5,12 +5,17 @@ const axios = require("axios");
 const querystring = require("querystring");
 
 const app = express();
-const port = process.env.PORT || 8888; // Use the port defined in the environment or default to 8888
+const port = process.env.PORT || 8888;
 
-const redirect_uri = "http://localhost:8888/callback"; // Changed to local callback URL
+// Update this to your deployed Netlify app URL
+const redirect_uri = "https://spotifytracker426.netlify.app/callback"; // Updated callback URL
 
 // Enable CORS for all routes
-app.use(cors()); // Enable CORS
+app.use(
+  cors({
+    origin: "https://spotifytracker426.netlify.app", // Allow only your Netlify URL
+  })
+);
 
 // Optional: Handle JSON bodies if needed
 app.use(express.json());
@@ -64,13 +69,13 @@ app.get("/callback", (req, res) => {
     },
   })
     .then((response) => {
-      const { access_token, refresh_token } = response.data;
+      const { access_token } = response.data;
 
       console.log(`Access token: ${access_token}`);
 
-      // Redirect to the frontend with the access token to local dashboard
+      // Redirect to the frontend with the access token
       res.redirect(
-        `http://localhost:3000/dashboard?access_token=${access_token}` // <-- This is the line you referenced
+        `https://spotifytracker426.netlify.app/dashboard?access_token=${access_token}` // Update to your Netlify URL
       );
     })
     .catch((err) => {
@@ -100,7 +105,6 @@ app.get("/currently-playing", (req, res) => {
     })
     .then((response) => {
       if (response.status === 204) {
-        // No content if nothing is playing
         return res.status(204).send("No track currently playing");
       }
 
