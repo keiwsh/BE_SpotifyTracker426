@@ -51,8 +51,6 @@ app.get("/callback", (req, res) => {
     return res.status(400).send("Authorization code missing");
   }
 
-  console.log(`Authorization code received: ${code}`);
-
   axios({
     method: "post",
     url: "https://accounts.spotify.com/api/token",
@@ -71,22 +69,16 @@ app.get("/callback", (req, res) => {
     .then((response) => {
       const { access_token } = response.data;
 
-      console.log(`Access token: ${access_token}`);
-
       // Redirect to the frontend with the access token
       res.redirect(
-        `https://spotifytracker426.netlify.app/dashboard?access_token=${access_token}` // Update to your Netlify URL
-      );
+        `https://spotifytracker426.netlify.app/?access_token=${access_token}`
+      ); // Change to your Netlify URL
     })
     .catch((err) => {
-      console.error(
-        "Error exchanging token:",
-        err.response ? err.response.data : err.message
-      );
+      console.error("Error exchanging token:", err);
       res.status(500).send("Error exchanging token");
     });
 });
-
 // Step 3: Get currently playing track
 app.get("/currently-playing", (req, res) => {
   const access_token = req.query.access_token;
